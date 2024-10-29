@@ -7,9 +7,9 @@ on:
 
 env:
   GCP_PROJECT: graceful-fact
-  IMAGE_NAME: web-app-image
+  IMAGE_NAME: web-app-dev
   GKE_CLUSTER: web-app-cluster
-  GKE_REGISTRY: web-app-dev
+  GKE_REGISTRY: web-app-docker
   GKE_REGION: australia-southeast1 
   GITHUB_SHA: ${{ github.sha }}
   K8_NAMESPACE: development  
