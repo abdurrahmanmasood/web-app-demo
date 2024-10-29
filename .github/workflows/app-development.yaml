@@ -60,7 +60,7 @@ jobs:
         uses: 'google-github-actions/get-gke-credentials@v2'
         with:
           cluster_name: $GKE_CLUSTER
-          location: australia-southeast1-a
+          location: australia-southeast1
             
       - name: Connect to GKE Cluster
         run: |
