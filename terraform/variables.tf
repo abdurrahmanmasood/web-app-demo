@@ -8,8 +8,8 @@ variable "region" {
   type        = string
 }
 
-variable "vpc_network" {
-  description = "VPC network name"
+variable "artifact_registry_repository" {
+  description = "Docker repository name"
   type        = string
 }
 
