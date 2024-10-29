@@ -31,10 +31,10 @@ resource "google_project_service" "kubernetes_engine" {
 # }
 
 resource "google_compute_address" "static_ip" {
-  name        = "my-static-ip"
-  region      = var.region
+  name         = "my-static-ip"
+  region       = var.region
   address_type = "EXTERNAL"
-  description = "Web App Static IP"
+  description  = "Web App Static IP"
 }
 
 output "static_ip_address" {
