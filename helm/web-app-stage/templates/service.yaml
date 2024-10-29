@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "web-app-dev.fullname" . }}
+  name: {{ include "web-app-stage.fullname" . }}
   labels:
-    {{- include "web-app-dev.labels" . | nindent 4 }}
+    {{- include "web-app-stage.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "web-app-dev.selectorLabels" . | nindent 4 }}
+    {{- include "web-app-stage.selectorLabels" . | nindent 4 }}

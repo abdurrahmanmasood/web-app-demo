@@ -8,15 +8,15 @@ on:
 env:
   GCP_PROJECT: graceful-fact
   IMAGE_NAME: web-app-image
-  GKE_CLUSTER: autopilot-cluster-1
-  GKE_REGISTRY: web-app-docker
-  GCR_ZONE: australia-southeast1  # Change to your region, e.g., 'us', 'eu', or 'asia'
+  GKE_CLUSTER: web-app-cluster
+  GKE_REGISTRY: web-app-dev
+  GKE_REGION: australia-southeast1 
   GITHUB_SHA: ${{ github.sha }}
-  K8S_NAMESPACE: default  # Kubernetes namespace
-  HELM_RELEASE_NAME: web-app-dev  # Helm release name
+  K8_NAMESPACE: development  
+  HELM_RELEASE_NAME: web-app-dev
 
-jobs:
-  build-and-push:
+jobs:  
+  docker-build-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-20.04
 
@@ -31,17 +31,17 @@ jobs:
           credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Configure Docker to use gcloud as a credential helper
-        run: gcloud auth configure-docker $GCR_ZONE-docker.pkg.dev
+        run: gcloud auth configure-docker $GKE_REGION-docker.pkg.dev
 
       - name: Build Docker Image
         run: |
-          cd web-app && docker build -t $GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA .
+          cd web-app && docker build -t $GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA .
 
       - name: Push Docker Image to GCR
         run: |
-          cd web-app && docker push $GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA
+          cd web-app && docker push $GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA
 
-  deploy:
+  gke-deploy:
     name: Deploy to GKE with Helm
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -61,16 +61,20 @@ jobs:
 
       - name: 'Use gcloud CLI'
         run: |
-          gcloud info
           gcloud components update
           gcloud components install gke-gcloud-auth-plugin
             
       - name: Connect to GKE Cluster
         run: |
-          gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project graceful-fact
+          gcloud container clusters get-credentials $GKE_CLUSTER --region $GKE_REGION --project $GCP_PROJECT
+
+      - name: Creating Namespace
+        run: |
+          kubectl create namespace $K8_NAMESPACE
       
       - name: Deploy with Helm
         run: |
           helm upgrade --install $HELM_RELEASE_NAME ./helm/web-app-dev \
-            --set image.repository=$GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME \
-            --set image.tag=${{ github.sha }}
+            --set image.repository=$GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME \
+            --set image.tag=${{ github.sha }} \
+            --namespace=K8_NAMESPACE

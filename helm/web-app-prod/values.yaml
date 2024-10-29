@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: australia-southeast1-docker.pkg.dev/graceful-fact/web-app-dev/web-app-image
+  repository: australia-southeast1-docker.pkg.dev/graceful-fact/web-app-prod/web-app-image
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
