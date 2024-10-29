@@ -8,6 +8,7 @@ resource "google_project_service" "compute_engine" {
   project            = var.project_id
   service            = "compute.googleapis.com"
   disable_on_destroy = true
+  depends_on = [ google_project_service.cloud_resource_manager ]
 }
 
 resource "google_compute_network" "vpc_network" {
