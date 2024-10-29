@@ -8,6 +8,7 @@ on:
 env:
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   IMAGE_NAME: web-app-image
+  GKE_CLUSTER: autopilot-cluster-1
   GCR_ZONE: australia-southeast1  # Change to your region, e.g., 'us', 'eu', or 'asia'
   GITHUB_SHA: ${{ github.sha }}
   K8S_NAMESPACE: default  # Kubernetes namespace
@@ -29,7 +30,7 @@ jobs:
           credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Configure Docker to use gcloud as a credential helper
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker $GCR_ZONE-docker.pkg.dev
 
       - name: Build Docker Image
         run: |
@@ -39,29 +40,32 @@ jobs:
         run: |
           cd web-app && docker push $GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$IMAGE_NAME:$GITHUB_SHA
 
-  # deploy:
-  #   name: Deploy to GKE with Helm
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
+  deploy:
+    name: Deploy to GKE with Helm
+    needs: build-and-push
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-  #     - name: Set up Google Cloud SDK
-  #       uses: google-github-actions/setup-gcloud@v1
-  #       with:
-  #         project_id: ${{ secrets.GCP_PROJECT }}
-  #         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-  #         export_default_credentials: true
+      # Authenticate GitHub Actions with Google Cloud
+      - name: Setup Google Cloud Authentication 
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-  #     - name: Connect to GKE Cluster
-  #       run: |
-  #         gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT }}
+      - name: Install GKE Auth Plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
 
-  #     - name: Deploy with Helm
-  #       run: |
-  #         helm upgrade --install $HELM_RELEASE_NAME ./helm-chart \
-  #           --namespace $K8S_NAMESPACE \
-  #           --set image.repository=gcr.io/${{ secrets.GCP_PROJECT }}/$IMAGE_NAME \
-  #           --set image.tag=${{ github.sha }}
+      - name: Connect to GKE Cluster
+        run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install $HELM_RELEASE_NAME ./helm/web-app \
+            --namespace $K8S_NAMESPACE \
+            --set image.repository=$GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$IMAGE_NAME \
+            --set image.tag=${{ github.sha }}
