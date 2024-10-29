@@ -1,0 +1,8 @@
+# templates/managed-cert.yaml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{ include "web-app-dev.fullname" . }}-managed-cert  # Customize the name
+spec:
+  domains:
+    - {{ .Values.ingress.hosts[0].host }}  # Reference your domain from values.yaml

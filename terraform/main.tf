@@ -23,12 +23,24 @@ resource "google_project_service" "kubernetes_engine" {
   disable_on_destroy = true
 }
 
-resource "google_compute_network" "vpc_network" {
-  project                 = var.project_id
-  name                    = var.vpc_network
-  auto_create_subnetworks = true
-  depends_on              = [google_project_service.compute_engine]
+# resource "google_compute_network" "vpc_network" {
+#   project                 = var.project_id
+#   name                    = var.vpc_network
+#   auto_create_subnetworks = true
+#   depends_on              = [google_project_service.compute_engine]
+# }
+
+resource "google_compute_address" "static_ip" {
+  name        = "my-static-ip"
+  region      = var.region
+  address_type = "EXTERNAL"
+  description = "Web App Static IP"
 }
+
+output "static_ip_address" {
+  value = google_compute_address.static_ip.address
+}
+
 
 resource "google_service_account" "default" {
   account_id   = "service-account-id"
@@ -53,9 +65,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
-
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.default.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
