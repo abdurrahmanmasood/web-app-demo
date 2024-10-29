@@ -58,7 +58,7 @@ jobs:
 
       - name: Connect to GKE Cluster
         run: |
-          gcloud container clusters get-credentials $GKE_CLUSTER --region $GKE_ZONE --project $GCP_PROJECT
+          gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project graceful-fact
 
       - name: Deploy with Helm
         run: |
