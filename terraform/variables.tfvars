@@ -1,3 +1,5 @@
-project_id  = "graceful-fact"
-region      = "australia-southeast1"
-vpc_network = "web-app-network"
+project_id            = "graceful-fact"
+region                = "australia-southeast1"
+vpc_network           = "web-app-network"
+gke_cluster           = "web-app-cluster"
+gke_cluster_node_pool = "web-app-node-pool"
