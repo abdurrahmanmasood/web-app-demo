@@ -70,7 +70,7 @@ jobs:
 
       - name: Creating Namespace
         run: |
-          kubectl create namespace $K8_NAMESPACE
+          kubectl get namespace $K8_NAMESPACE || kubectl create namespace $K8_NAMESPACE
       
       - name: Deploy with Helm
         run: |
