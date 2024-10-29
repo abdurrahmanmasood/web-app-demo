@@ -60,6 +60,7 @@ jobs:
         run: |
           sudo apt-get install apt-transport-https ca-certificates -y
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          sudo apt-get update
           sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
       - name: Connect to GKE Cluster
