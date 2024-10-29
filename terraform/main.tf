@@ -11,6 +11,12 @@ resource "google_project_service" "compute_engine" {
   depends_on         = [google_project_service.cloud_resource_manager]
 }
 
+resource "google_project_service" "iam_api" {
+  project            = var.project_id
+  service            = "iam.googleapis.com"
+  disable_on_destroy = true
+}
+
 resource "google_project_service" "kubernetes_engine" {
   project            = var.project_id
   service            = "container.googleapis.com"
@@ -34,6 +40,7 @@ resource "google_container_cluster" "primary" {
   location                 = var.region
   remove_default_node_pool = true
   initial_node_count       = 1
+  depends_on               = [google_project_service.kubernetes_engine]
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
@@ -52,4 +59,5 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
+  depends_on = [google_project_service.iam_api]
 }
