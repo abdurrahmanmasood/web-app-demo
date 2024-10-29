@@ -6,7 +6,7 @@ on:
       - development
 
 env:
-  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  GCP_PROJECT: graceful-fact
   IMAGE_NAME: web-app-image
   GKE_CLUSTER: autopilot-cluster-1
   GKE_REGISTRY: web-app-docker
