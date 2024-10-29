@@ -43,7 +43,7 @@ jobs:
 
   gke-deploy:
     name: Deploy to GKE with Helm
-    needs: build-and-push
+    needs: docker-build-push
     runs-on: ubuntu-latest
 
     steps:
