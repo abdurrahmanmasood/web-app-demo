@@ -72,6 +72,5 @@ jobs:
       - name: Deploy with Helm
         run: |
           helm upgrade --install $HELM_RELEASE_NAME ./helm/web-app \
-            --namespace $K8S_NAMESPACE \
             --set image.repository=$GCR_ZONE-docker.pkg.dev/$GCP_PROJECT/$IMAGE_NAME \
             --set image.tag=${{ github.sha }}
