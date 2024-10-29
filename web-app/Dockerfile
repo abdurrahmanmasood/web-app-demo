@@ -1,3 +1,4 @@
+# Dockerfile
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
@@ -10,11 +11,8 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Expose port 8080 to match GKE conventions
+EXPOSE 8080
 
-# Define environment variable
-ENV NAME World
-
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Set the entrypoint to use gunicorn to serve the app
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
