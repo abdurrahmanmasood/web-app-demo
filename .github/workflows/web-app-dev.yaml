@@ -10,7 +10,8 @@ env:
   IMAGE_NAME: web-app-dev
   GKE_CLUSTER: web-app-cluster
   GKE_REGISTRY: web-app-docker
-  GKE_REGION: australia-southeast1-a 
+  GKE_ZONE: australia-southeast1-a
+  GKE_REGION: australia-southeast1 
   GITHUB_SHA: ${{ github.sha }}
   K8_NAMESPACE: development  
   HELM_RELEASE_NAME: web-app-dev
@@ -112,7 +113,7 @@ jobs:
             
       - name: Connect to GKE Cluster
         run: |
-          gcloud container clusters get-credentials $GKE_CLUSTER --region $GKE_REGION --project $GCP_PROJECT
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT
 
       - name: Creating Namespace
         run: |
