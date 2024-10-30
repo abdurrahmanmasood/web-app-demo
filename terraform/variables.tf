@@ -28,6 +28,16 @@ variable "gke_cluster" {
   type        = string
 }
 
+variable "gke_service_account" {
+  description = "GKE Cluster name"
+  type        = string
+}
+
+variable "gke_cluster" {
+  description = "GKE Cluster name"
+  type        = string
+}
+
 variable "gke_cluster_node_pool" {
   description = "GKE Cluster node pool name"
   type        = string

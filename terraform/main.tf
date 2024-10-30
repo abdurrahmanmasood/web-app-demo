@@ -1,21 +1,28 @@
 resource "google_project_service" "cloud_resource_manager" {
   project = var.project_id
   service = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy = false
 }
 
 resource "google_project_service" "compute_engine" {
   project = var.project_id
   service = "compute.googleapis.com"
+  disable_on_destroy = false
+
 }
 
 resource "google_project_service" "iam_api" {
   project = var.project_id
   service = "iam.googleapis.com"
+  disable_on_destroy = false
+
 }
 
 resource "google_project_service" "kubernetes_engine" {
   project = var.project_id
   service = "container.googleapis.com"
+  disable_on_destroy = false
+
 }
 
 resource "google_artifact_registry_repository" "my-repo" {
@@ -24,10 +31,6 @@ resource "google_artifact_registry_repository" "my-repo" {
   format        = "DOCKER"
 }
 
-# resource "google_compute_global_address" "static_ip_global" {
-#   name = "web-app-dev"
-# }
-
 # Create a VPC Network
 resource "google_compute_network" "vpc_network" {
   name                    = var.network_name
@@ -35,38 +38,8 @@ resource "google_compute_network" "vpc_network" {
   depends_on              = [google_project_service.compute_engine]
 }
 
-# # Create Firewall Rule to Allow Internal Traffic
-# resource "google_compute_firewall" "allow_internal" {
-#   name    = "allow-internal"
-#   network = google_compute_network.vpc_network.name
-
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["8080"] # Allow all TCP traffic
-#   }
-
-#   source_ranges = ["10.0.0.0/24"] # Adjust based on your subnetwork CIDR
-#   target_tags   = ["flask-app"]
-
-# }
-
-# # Create Firewall Rule to Allow External Traffic to GKE API
-# resource "google_compute_firewall" "allow_gke_api" {
-#   name    = "allow-gke-api"
-#   network = google_compute_network.vpc_network.name
-
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["443"] # Allow HTTPS traffic for GKE API
-#   }
-
-#   source_ranges = ["0.0.0.0/0"] # Allow access from anywhere (consider restricting this)
-#   target_tags   = ["flask-app"]
-
-# }
-
 resource "google_service_account" "default" {
-  account_id   = "service-account-id"
+  account_id   = var.gke_service_account
   display_name = "GKE Service Account"
 }
 
