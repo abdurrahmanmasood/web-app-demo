@@ -65,6 +65,11 @@ resource "google_compute_network" "vpc_network" {
 
 # }
 
+resource "google_service_account" "default" {
+  account_id   = "gke"
+  display_name = "GKE Service Account"
+}
+
 resource "google_container_cluster" "primary" {
   name                     = var.gke_cluster
   location                 = var.zone
@@ -89,6 +94,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
+    service_account = google_service_account.default.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
