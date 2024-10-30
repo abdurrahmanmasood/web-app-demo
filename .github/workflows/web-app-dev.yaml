@@ -10,7 +10,7 @@ env:
   IMAGE_NAME: web-app-dev
   GKE_CLUSTER: web-app-cluster
   GKE_REGISTRY: web-app-docker
-  GKE_REGION: australia-southeast1 
+  GKE_REGION: australia-southeast1-a 
   GITHUB_SHA: ${{ github.sha }}
   K8_NAMESPACE: development  
   HELM_RELEASE_NAME: web-app-dev
