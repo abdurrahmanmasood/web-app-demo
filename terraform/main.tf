@@ -104,6 +104,12 @@ resource "google_container_cluster" "primary" {
     enable_private_endpoint = true
   }
 
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block   = ""     # Replace with your public IP
+      display_name = "Home" # A name for easier identification
+    }
+  }
   deletion_protection = false
   depends_on          = [google_project_service.kubernetes_engine]
 }
