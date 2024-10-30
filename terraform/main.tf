@@ -24,9 +24,9 @@ resource "google_artifact_registry_repository" "my-repo" {
   format        = "DOCKER"
 }
 
-# resource "google_compute_global_address" "static_ip_global" {
-#   name = "flask-app-static-ip"
-# }
+resource "google_compute_global_address" "static_ip_global" {
+  name = "web-app-dev"
+}
 
 # Create a VPC Network
 resource "google_compute_network" "vpc_network" {
