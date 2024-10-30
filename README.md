@@ -1,4 +1,4 @@
-# GKE Flask App Deployment with Terraform and GitHub Actions
+# Python Flask App Deployment with Terraform and GitHub Actions on Google Kubernetes Engine
 
 This project demonstrates how to create a Google Kubernetes Engine (GKE) cluster using Terraform, deploy a Flask application with Docker and Helm charts, and automate the CI/CD pipeline using GitHub Actions.
 
@@ -17,21 +17,29 @@ This project demonstrates how to create a Google Kubernetes Engine (GKE) cluster
 
 Before you begin, ensure you have the following:
 
-- A Google Cloud Platform (GCP) project.
+- A Google Cloud project.
 - Terraform installed on your local machine.
 - Docker installed on your local machine.
 - Helm installed on your local machine.
-- A GitHub account.
+- Google Cloud CLI configured on your local machine.
 
 ## Setup Instructions
 
-### 1. Create a Service Account for GitHub Actions
+Open setup.sh file available in project root directory.
 
-1. Navigate to the **Google Cloud Console**.
-2. Go to **IAM & Admin** > **Service Accounts**.
-3. Click on **Create Service Account**.
-4. Fill in the required details (name, description) and click **Create**.
-5. Assign the following permissions manually via the console:
+Set the following variables:
+
+SERVICE_ACCOUNT_NAME="github-actions"
+PROJECT_ID="wired-torus123"
+BUCKET_NAME="terraform-state-file-$PROJECT_ID"
+REGION="australia-southeast1 "
+
+Run the bash file to perform the following tasks.
+
+### 1. Creating Service Account for GitHub Actions
+
+1. The bash file creates service account name as `github-actions`
+2. The following permissions are assigned:
    - Artifact Registry Administrator
    - Artifact Registry Writer
    - Compute Network Admin
@@ -41,38 +49,47 @@ Before you begin, ensure you have the following:
    - Service Account User
    - Service Usage Admin
    - Storage Object Admin
-6. Click **Done** to finish creating the service account.
-7. Generate a key for this service account and download the JSON key file.
-8. Go to your GitHub repository and navigate to **Settings** > **Secrets and variables** > **Actions**.
-9. Click on **New repository secret** and create a secret named `GOOGLE_APPLICATION_CREDENTIALS`, pasting the contents of the JSON key file.
+   - Security Admin
+3. After service account is created generate a key for this service account and download the JSON key file.
+4. Go to your GitHub repository and navigate to **Settings** > **Secrets and variables** > **Actions**.
+5. Click on **New repository secret** and create a secret named `GOOGLE_APPLICATION_CREDENTIALS`, pasting the contents of the JSON key file.
 
-### 2. Create a Storage Bucket
+### 2. Creates a Storage Bucket for State file
 
-1. In the **Google Cloud Console**, navigate to **Cloud Storage**.
-2. Click on **Create Bucket**.
-3. Name your bucket (ensure it's unique across GCP).
-4. Choose a location and set any other options as needed.
-5. Click **Create** to finalize the bucket.
+1. The bash file creates a storage bucket name as `terraform-state-file-<project-id>`
+2. After the bucket is created open providers.tfvars file in terraform directory.
+3. Set this bucket name as backend for terraform.
+
 
 This bucket will be used to store the Terraform state file.
 
 ### 3. Configure Terraform
 
-1. Clone the repository containing your Terraform code.
-   ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-2. Open the `variables.tfvars` file (or the equivalent Terraform configuration file).
-3. Update the project ID and bucket name in the Terraform configuration.
-   ```
+1. Open the `variables.tfvars` file 
+2. Set the variables name
 
-## Running the Application
+- **Project ID**: `wired-torus123`
+- **Region**: `australia-southeast1`
+- **Zone**: `australia-southeast1-a`
+- **Artifact Registry Repository**: `web-app-docker`
+- **GKE Cluster**: `web-app-cluster`
+- **GKE Service Account**: `gke-service-account`
+- **GKE Cluster Node Pool**: `web-app-node-pool`
+- **Network Name**: `vpc-network`
 
-After successfully setting up the CI/CD pipeline, any changes pushed to your main branch will trigger the workflow, building the Docker image and deploying the application on your GKE cluster. 
+### 4. Configuring CI/CD pipeline
+
+1. Open the `web-app-dev` , `web-app-stage`, `web-app-prod` file 
+2. Set the `GCP_PROJECT` variable with your project name.
+
+## Running the Infrastructure
+
+After successfully setting up the CI/CD pipeline, any changes pushed to your production, staging, development branch will trigger the workflow, building the Docker image and deploying the application on your GKE cluster. 
 
 You can access your Flask application using the external IP of your GKE service.
 
-## License
+## Architecture Diagram
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+Here is the architecture diagram for the project:
+
+![Architecture Diagram](web-app-demo.png)
