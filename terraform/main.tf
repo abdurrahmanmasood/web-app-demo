@@ -24,9 +24,9 @@ resource "google_artifact_registry_repository" "my-repo" {
   format        = "DOCKER"
 }
 
-resource "google_compute_global_address" "static_ip_global" {
-  name = "web-app-dev"
-}
+# resource "google_compute_global_address" "static_ip_global" {
+#   name = "web-app-dev"
+# }
 
 # Create a VPC Network
 resource "google_compute_network" "vpc_network" {
@@ -67,12 +67,12 @@ resource "google_compute_network" "vpc_network" {
 
 resource "google_container_cluster" "primary" {
   name                     = var.gke_cluster
-  location                 = var.region
+  location                 = var.zone
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = google_compute_network.vpc_network.name
-  deletion_protection = false
-  depends_on          = [google_project_service.kubernetes_engine]
+  deletion_protection      = false
+  depends_on               = [google_project_service.kubernetes_engine]
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
