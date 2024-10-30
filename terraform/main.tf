@@ -92,7 +92,7 @@ resource "google_compute_router_nat" "my_nat_gateway" {
 
 resource "google_container_cluster" "primary" {
   name                     = var.gke_cluster
-  location                 = var.region
+  location                 = "australia-southeast1-a"
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = google_compute_network.vpc_network.name
