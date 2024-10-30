@@ -17,7 +17,7 @@ env:
 
 jobs:  
   terraform:
-    name: Terraform
+    name: Infrastructure Deployment with Terraform
     runs-on: ubuntu-latest
     environment: production
 
@@ -63,6 +63,7 @@ jobs:
   
   docker-build-push:
     name: Build and Push Docker Image
+    needs: terraform
     runs-on: ubuntu-20.04
 
     steps:
