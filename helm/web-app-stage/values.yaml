@@ -47,7 +47,8 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:ingress:
+ingress:
+=======
   enabled: false
   className: ""
   annotations: {}
