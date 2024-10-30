@@ -106,7 +106,7 @@ resource "google_container_cluster" "primary" {
 
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = google_compute_subnetwork.gke_subnet.ip_cidr_range # Allow access from the GKE subnet
+      cidr_block   = google_compute_subnetwork.subnetwork.ip_cidr_range # Allow access from the GKE subnet
       display_name = "GKE Subnet"
     }
   }
