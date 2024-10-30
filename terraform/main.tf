@@ -59,6 +59,13 @@ resource "google_project_iam_member" "artifact_registry_admin" {
   member  = "serviceAccount:${google_service_account.default.email}"
 }
 
+# Step 2: Assign Roles to the Service Account
+resource "google_project_iam_member" "artifact_registry_admin" {
+  project = var.project_id
+  role    = "roles/artifactregistry.admin"
+  member  = "serviceAccount:${google_service_account.default.email}"
+}
+
 resource "google_container_cluster" "primary" {
   name                     = var.gke_cluster
   location                 = var.zone
