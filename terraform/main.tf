@@ -24,25 +24,15 @@ resource "google_artifact_registry_repository" "my-repo" {
   format        = "DOCKER"
 }
 
-resource "google_compute_global_address" "static_ip_global" {
-  name = "flask-app-static-ip"
-}
+# resource "google_compute_global_address" "static_ip_global" {
+#   name = "flask-app-static-ip"
+# }
 
 # Create a VPC Network
 resource "google_compute_network" "vpc_network" {
   name                    = var.network_name
-  auto_create_subnetworks = false
+  auto_create_subnetworks = true
   depends_on              = [google_project_service.compute_engine]
-}
-
-
-
-# Create Subnets
-resource "google_compute_subnetwork" "subnetwork" {
-  name          = var.subnetwork_name
-  ip_cidr_range = "10.0.0.0/24" # Adjust the CIDR range as needed
-  region        = var.region    # Must match the region in the provider block
-  network       = google_compute_network.vpc_network.name
 }
 
 # # Create Firewall Rule to Allow Internal Traffic
@@ -77,22 +67,17 @@ resource "google_compute_subnetwork" "subnetwork" {
 
 resource "google_container_cluster" "primary" {
   name                     = var.gke_cluster
-  location                 = "australia-southeast1-a"
+  location                 = var.region
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = google_compute_network.vpc_network.name
-  subnetwork               = google_compute_subnetwork.subnetwork.name
-
-
-
-
   deletion_protection = false
   depends_on          = [google_project_service.kubernetes_engine]
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = var.gke_cluster_node_pool
-  location   = "australia-southeast1-a"
+  location   = var.region
   cluster    = google_container_cluster.primary.name
   node_count = 1
 
