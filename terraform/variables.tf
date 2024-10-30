@@ -18,11 +18,6 @@ variable "network_name" {
   type        = string
 }
 
-variable "subnetwork_name" {
-  description = "The name of the subnetwork."
-  type        = string
-}
-
 variable "artifact_registry_repository" {
   description = "Docker repository name"
   type        = string
