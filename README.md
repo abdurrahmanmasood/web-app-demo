@@ -92,4 +92,4 @@ You can access your Flask application using the external IP of your GKE service.
 
 Here is the architecture diagram for the project:
 
-![Architecture Diagram](URL_TO_YOUR_IMAGE)
+![Architecture Diagram](web-app-demo.png)
