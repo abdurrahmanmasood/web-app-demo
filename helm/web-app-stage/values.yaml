@@ -48,7 +48,6 @@ securityContext: {}
   # runAsUser: 1000
 
 ingress:
-=======
   enabled: false
   className: ""
   annotations: {}

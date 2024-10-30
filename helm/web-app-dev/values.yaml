@@ -18,7 +18,7 @@ deployment:
   containerPort: 8080
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
   targetPort: 8080
 
@@ -48,13 +48,12 @@ securityContext: {}
   # runAsUser: 1000
 
 ingress:
-  enabled: false
-  className: ""
+  enabled: true
+  className: "gce"             # Specify the ingress class (nginx)
   annotations:
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: gce
   hosts: 
-    - host: chart-example.local
+    - host: ""
       paths:
         - path: /
           pathType: ImplementationSpecific
