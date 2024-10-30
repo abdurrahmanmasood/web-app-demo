@@ -101,7 +101,7 @@ resource "google_container_cluster" "primary" {
   private_cluster_config {
     enable_private_nodes    = true
     master_ipv4_cidr_block  = "10.0.1.0/28" # Reserved for GKE master endpoint
-    enable_private_endpoint = true
+    enable_private_endpoint = false
   }
 
   master_authorized_networks_config {
