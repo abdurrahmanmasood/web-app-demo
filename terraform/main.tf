@@ -48,7 +48,7 @@ resource "google_compute_router_nat" "my_nat_gateway" {
   region = var.region
   router = google_compute_router.my_router.name
 
-  nat_ip_allocate_option             = "AUTO_ONLY"                       # Use auto-allocated external IPs
+  nat_ip_allocate_option             = "AUTO_ONLY" # Use auto-allocated external IPs
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
 
