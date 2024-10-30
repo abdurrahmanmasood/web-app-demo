@@ -46,10 +46,12 @@ resource "google_compute_firewall" "allow_internal" {
 
   allow {
     protocol = "tcp"
-    ports    = ["0-65535"] # Allow all TCP traffic
+    ports    = ["8080"] # Allow all TCP traffic
   }
 
   source_ranges = ["10.0.0.0/24"] # Adjust based on your subnetwork CIDR
+  target_tags   = ["flask-app"]
+
 }
 
 # Create Firewall Rule to Allow External Traffic to GKE API
@@ -63,6 +65,8 @@ resource "google_compute_firewall" "allow_gke_api" {
   }
 
   source_ranges = ["0.0.0.0/0"] # Allow access from anywhere (consider restricting this)
+  target_tags   = ["flask-app"]
+
 }
 
 resource "google_container_cluster" "primary" {
@@ -90,6 +94,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
+    tags         = ["flask-app"]
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
