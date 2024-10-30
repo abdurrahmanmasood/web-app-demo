@@ -28,7 +28,7 @@ resource "google_artifact_registry_repository" "my-repo" {
 resource "google_compute_network" "vpc_network" {
   name                    = var.network_name
   auto_create_subnetworks = true # Disable auto subnet creation
-  depends_on = [ google_project_service.compute_engine ]
+  depends_on              = [google_project_service.compute_engine]
 }
 
 # # Create Subnets

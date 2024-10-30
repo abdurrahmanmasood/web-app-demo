@@ -17,7 +17,7 @@ env:
 
 jobs:  
   terraform:
-    name: Infrastructure Deployment with Terraform
+    name: Infrastructure Deployment
     runs-on: ubuntu-latest
     environment: production
 
