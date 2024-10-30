@@ -8,10 +8,10 @@ resource "google_project_service" "compute_engine" {
   service = "compute.googleapis.com"
 }
 
-resource "google_project_service" "iam_api" {
-  project = var.project_id
-  service = "iam.googleapis.com"
-}
+# resource "google_project_service" "iam_api" {
+#   project = var.project_id
+#   service = "iam.googleapis.com"
+# }
 
 resource "google_project_service" "kubernetes_engine" {
   project = var.project_id
@@ -28,6 +28,7 @@ resource "google_artifact_registry_repository" "my-repo" {
 resource "google_compute_network" "vpc_network" {
   name                    = var.network_name
   auto_create_subnetworks = true # Disable auto subnet creation
+  depends_on = [ google_project_service.compute_engine ]
 }
 
 # # Create Subnets
