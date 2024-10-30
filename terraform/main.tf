@@ -18,6 +18,13 @@ resource "google_project_service" "iam_api" {
 
 }
 
+resource "google_project_service" "artifact_registry" {
+  project            = var.project_id
+  service            = "artifactregistry.googleapis.com"
+  disable_on_destroy = false
+
+}
+
 resource "google_project_service" "kubernetes_engine" {
   project            = var.project_id
   service            = "container.googleapis.com"
@@ -29,6 +36,7 @@ resource "google_artifact_registry_repository" "my-repo" {
   location      = var.region
   repository_id = var.artifact_registry_repository
   format        = "DOCKER"
+  depends_on    = [google_project_service.artifact_registry]
 }
 
 # Create a VPC Network
@@ -41,6 +49,14 @@ resource "google_compute_network" "vpc_network" {
 resource "google_service_account" "default" {
   account_id   = var.gke_service_account
   display_name = "GKE Service Account"
+  depends_on   = [google_project_service.iam_api]
+}
+
+# Step 2: Assign Roles to the Service Account
+resource "google_project_iam_member" "artifact_registry_admin" {
+  project = var.project_id
+  role    = "roles/artifactregistry.admin"
+  member  = "serviceAccount:${google_service_account.default.email}"
 }
 
 # Step 2: Assign Roles to the Service Account
