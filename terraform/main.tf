@@ -49,7 +49,7 @@ resource "google_compute_router_nat" "my_nat_gateway" {
   router = google_compute_router.my_router.name
 
   nat_ip_allocate_option             = "AUTO_ONLY"                       # Use auto-allocated external IPs
-  source_subnetwork_ip_ranges_to_nat = [google_compute_subnetwork.gke_subnet.ip_cidr_range]  # Enable NAT for the GKE subnet
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
 
 # # Create Subnets
