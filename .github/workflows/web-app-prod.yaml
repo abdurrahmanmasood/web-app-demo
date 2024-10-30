@@ -1,0 +1,127 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - production
+
+env:
+  GCP_PROJECT: graceful-fact
+  IMAGE_NAME: web-app-prod
+  GKE_CLUSTER: web-app-cluster
+  GKE_REGISTRY: web-app-docker
+  GKE_REGION: australia-southeast1 
+  GKE_ZONE: australia-southeast1-a
+  GITHUB_SHA: ${{ github.sha }}
+  K8_NAMESPACE: production
+  HELM_RELEASE_NAME: web-app-prod
+
+jobs:  
+  terraform:
+    name: Infrastructure Deployment
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Authenticate GitHub Actions with Google Cloud
+    - name: Setup Google Cloud Authentication 
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: cd terraform && terraform init
+
+    # Validates Terraform configuration files
+    - name: Terraform Validate
+      run:  cd terraform && terraform validate
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: cd terraform && terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: cd terraform && terraform plan -input=false -lock=false -var-file=variables.tfvars
+
+    # On push to "main", build or change infrastructure according to Terraform configuration files
+    - name: Terraform Apply
+      run: cd terraform && terraform apply -auto-approve -input=false -lock=false -var-file=variables.tfvars
+  
+  docker-build-push:
+    name: Build and Push Docker Image
+    needs: terraform
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Authenticate GitHub Actions with Google Cloud
+      - name: Setup Google Cloud Authentication 
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker $GKE_REGION-docker.pkg.dev
+
+      - name: Build Docker Image
+        run: |
+          cd web-app && docker build -t $GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA .
+
+      - name: Push Docker Image to GCR
+        run: |
+          cd web-app && docker push $GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME:$GITHUB_SHA
+
+  gke-deploy:
+    name: Deploy to GKE with Helm
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Authenticate GitHub Actions with Google Cloud
+      - name: Setup Google Cloud Authentication 
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: |
+          gcloud components update
+          gcloud components install gke-gcloud-auth-plugin
+            
+      - name: Connect to GKE Cluster
+        run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT
+
+      - name: Creating Namespace
+        run: |
+          kubectl get namespace $K8_NAMESPACE || kubectl create namespace $K8_NAMESPACE
+      
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install $HELM_RELEASE_NAME ./helm/web-app-prod \
+            --set image.repository=$GKE_REGION-docker.pkg.dev/$GCP_PROJECT/$GKE_REGISTRY/$IMAGE_NAME \
+            --set image.tag=${{ github.sha }} \
+            --namespace=$K8_NAMESPACE
