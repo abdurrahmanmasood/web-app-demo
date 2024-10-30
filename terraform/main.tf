@@ -66,7 +66,7 @@ resource "google_compute_network" "vpc_network" {
 # }
 
 resource "google_service_account" "default" {
-  account_id   = "gke"
+  account_id   = "service-account-id"
   display_name = "GKE Service Account"
 }
 
