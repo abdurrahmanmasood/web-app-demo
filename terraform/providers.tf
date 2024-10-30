@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "terraform-state-file-graceful-fact"
+    bucket = "terraform-state-file-third-extension"
   }
 }
 

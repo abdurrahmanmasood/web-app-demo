@@ -1,4 +1,4 @@
-project_id                   = "graceful-fact"
+project_id                   = "third-extension"
 region                       = "australia-southeast1"
 zone                         = "australia-southeast1-a"
 artifact_registry_repository = "web-app-docker"

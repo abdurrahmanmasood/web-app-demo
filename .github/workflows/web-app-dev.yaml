@@ -6,7 +6,7 @@ on:
       - development
 
 env:
-  GCP_PROJECT: graceful-fact
+  GCP_PROJECT: third-extension
   IMAGE_NAME: web-app-dev
   GKE_CLUSTER: web-app-cluster
   GKE_REGISTRY: web-app-docker
