@@ -35,22 +35,7 @@ resource "google_compute_network" "vpc_network" {
   depends_on              = [google_project_service.compute_engine]
 }
 
-# Create a Cloud Router for the NAT gateway
-resource "google_compute_router" "my_router" {
-  name    = "my-router123"
-  region  = var.region
-  network = google_compute_network.vpc_network.name
-}
 
-# Create a NAT gateway
-resource "google_compute_router_nat" "my_nat_gateway" {
-  name   = "my-nat-gateway"
-  region = var.region
-  router = google_compute_router.my_router.name
-
-  nat_ip_allocate_option             = "AUTO_ONLY" # Use auto-allocated external IPs
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
-}
 
 # Create Subnets
 resource "google_compute_subnetwork" "subnetwork" {
@@ -98,18 +83,9 @@ resource "google_container_cluster" "primary" {
   network                  = google_compute_network.vpc_network.name
   subnetwork               = google_compute_subnetwork.subnetwork.name
 
-  private_cluster_config {
-    enable_private_nodes    = true
-    master_ipv4_cidr_block  = "10.0.1.0/28" # Reserved for GKE master endpoint
-    enable_private_endpoint = false
-  }
 
-  master_authorized_networks_config {
-    cidr_blocks {
-      cidr_block   = google_compute_subnetwork.subnetwork.ip_cidr_range # Allow access from the GKE subnet
-      display_name = "GKE Subnet"
-    }
-  }
+
+
   deletion_protection = false
   depends_on          = [google_project_service.kubernetes_engine]
 }
