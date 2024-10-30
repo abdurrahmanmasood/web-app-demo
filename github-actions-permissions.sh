@@ -1,5 +1,11 @@
 SERVICE_ACCOUNT_NAME="github-actions"
-PROJECT_ID="third-extension"
+PROJECT_ID="wired-torus123"
+BUCKET_NAME="terraform-state-file-$PROJECT_ID"
+REGION="australia-southeast1 "
+
+# Creating bucket to store state file
+gcloud storage buckets create gs://$BUCKET_NAME \
+  --location=$REGION
 
 # Creating service account for github actions
 gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME \

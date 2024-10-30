@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "terraform-state-file-third-extension"
+    bucket = "terraform-state-file-wired-torus123"
   }
 }
 
