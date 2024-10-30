@@ -1,4 +1,4 @@
-# GKE Flask App Deployment with Terraform and GitHub Actions
+# GKE Flask App Deployment with Terraform and GitHub Actionsp
 
 This project demonstrates how to create a Google Kubernetes Engine (GKE) cluster using Terraform, deploy a Flask application with Docker and Helm charts, and automate the CI/CD pipeline using GitHub Actions.
 
