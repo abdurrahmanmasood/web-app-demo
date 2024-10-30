@@ -130,15 +130,13 @@ With the SSL certificate in place, we can set up an **Ingress** resource with a 
 ### Ingress and Service Configuration
 
 ### Ingress: 
-For accessing our application, with Ingress we can configure the service to use **NodePort** instead of a **LoadBalancer**. Here’s why this approach enhances security:
+For accessing our application, with Ingress we can configure the service to use **ClusterIP** instead of **NodePort**. Here’s why this approach enhances security:
 
-- **Ingress**: Ingress allows us to define routing rules for incoming traffic, providing a single entry point to the cluster. This minimizes the number of open ports on the nodes and allows for centralized management of SSL/TLS termination, simplifying certificate management.
+- **ClusterIP**: Using ClusterIP for internal services further secures our application by only allowing access from within the cluster. This prevents external traffic from directly accessing sensitive services, enhancing overall security.
+
+- **Node Port**: Using NodePort restricts exposure to the nodes’ public IP addresses. Unlike LoadBalancer services, which create external load balancers and expose a separate IP for each service, NodePort services only expose a specific port on each node's IP. This reduces the attack surface by limiting the number of publicly accessible IPs and ports.
+
 
 ### Service Types:
 
 - **Load Balancer**: Using NodePort restricts exposure to the nodes’ public IP addresses. Unlike LoadBalancer services, which create external load balancers and expose a separate IP for each service, NodePort services only expose a specific port on each node's IP. This reduces the attack surface by limiting the number of publicly accessible IPs and ports.
-
-- **Node Port**: Using NodePort restricts exposure to the nodes’ public IP addresses. Unlike LoadBalancer services, which create external load balancers and expose a separate IP for each service, NodePort services only expose a specific port on each node's IP. This reduces the attack surface by limiting the number of publicly accessible IPs and ports.
-
-- **ClusterIP**: Using ClusterIP for internal services further secures our application by only allowing access from within the cluster. This prevents external traffic from directly accessing sensitive services, enhancing overall security.
-
