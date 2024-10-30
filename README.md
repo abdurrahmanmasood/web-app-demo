@@ -88,3 +88,8 @@ After successfully setting up the CI/CD pipeline, any changes pushed to your pro
 
 You can access your Flask application using the external IP of your GKE service.
 
+## Architecture Diagram
+
+Here is the architecture diagram for the project:
+
+![Architecture Diagram](URL_TO_YOUR_IMAGE)
